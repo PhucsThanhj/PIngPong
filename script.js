@@ -5,6 +5,10 @@ const paddle2 = document.getElementById('paddle2');
 const ball = document.getElementById('ball');
 const dot = document.getElementById('dot');
 
+const btn1 = document.getElementById('button1');
+const btn2 = document.getElementById('button2');
+
+
 let paddle1PosX = 150;
 let paddle2PosX= 150;
 let ballPosX = 150;
@@ -14,9 +18,9 @@ let  ballSpeedY = 3;
 let paddle1SpeedX = 3;
 let paddle2SpeedX = 6;
 let score1 = 0;
-let dotPosX = 150;
+let dotPosX = 0;
+let dotWidth =0;
 
-let isDragging = false;
 
 
 function update() {
@@ -24,7 +28,7 @@ function update() {
   paddle2.style.left = paddle2PosX + 'px';
   ball.style.left = ballPosX + 'px';
   ball.style.top = ballPosY + 'px';
-  dot.style.left = dotPosX + 'px';
+  dot.style.width = dotWidth + 'px';
 
 
 
@@ -40,16 +44,19 @@ function update() {
     ballSpeedX = paddle1SpeedX= paddle2SpeedX=  3;
     ballSpeedY = 3;
     score1+=1;
+    dotWidth+=50;
   }
-  else if(ballPosY >= 480 &&( ballPosX<(paddle2PosX-60))){
+  if(ballPosY >= 480 &&( ballPosX<(paddle2PosX-60))){
     ballPosX = paddle1PosX;
     ballPosY = 0;
     ballSpeedX = paddle1SpeedX= paddle2SpeedX= 3;
     ballSpeedY = 3;
     score1+=1;
+    dotWidth+=50;
   }
-  if(score1 == 6){
+  if(score1 == 7){
     score1=0;
+    dotWidth=0;
     alert("Game over!");
   }
   document.getElementById("score1").innerHTML=score1;
@@ -88,51 +95,22 @@ function update() {
   requestAnimationFrame(update);
 }
 
-
-function movePaddle(e) {
-  const containerWidth = gameContainer.clientWidth;
-
 //paddle2 run
-//controler
-
-dot.addEventListener("mousedown", function(event) {
-  isDragging = true;
-  dotPosX= event.clientX - containerWidth*2 - 50;
-  paddle2PosX = dotPosX;
-});
-
-document.addEventListener("mousemove", function(event) {
-  if (isDragging) {
-    if (dotPosX < event.clientX - containerWidth*2 -50){
-      dotPosX += paddle2SpeedX;
-      paddle2PosX = dotPosX;
-     }
-    if (dotPosX > event.clientX - containerWidth*2){
-      dotPosX -= paddle2SpeedX;
-      paddle2PosX = dotPosX;
-     }
-
-     if(dotPosX < 0){
-      dotPosX = 0;
-    }
-    if(dotPosX >= 250){
-      dotPosX =250;
-    }
-    if (paddle2PosX < 0) {
+function movePaddle() {
+  btn1.onclick = function() {
+    paddle2PosX-= 50;
+    if(paddle2PosX < 0){
       paddle2PosX = 0;
-    }
-    
-    if (paddle2PosX > 300-50) {
-      paddle2PosX = 300 - 50;
-    }
+    };
+  };
+
+  btn2.onclick = function() {
+  paddle2PosX+= 50;
+  if (paddle2PosX > 300-50) {
+    paddle2PosX = 300 - 50;
   }
-});
+};
+};
 
-document.addEventListener("mouseup", function() {
-  isDragging = false;
-});
-
-}
-
-document.addEventListener('mousedown', movePaddle);
+document.addEventListener( "click",movePaddle);
 requestAnimationFrame(update);

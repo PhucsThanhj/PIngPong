@@ -12,9 +12,11 @@ let ballPosY = 250;
 let ballSpeedX = 3;
 let  ballSpeedY = 3;
 let paddle1SpeedX = 3;
-let dotPosX = 150;
+let paddle2SpeedX = 6;
 let score1 = 0;
+let dotPosX = 150;
 
+let isDragging = false;
 
 
 function update() {
@@ -22,6 +24,7 @@ function update() {
   paddle2.style.left = paddle2PosX + 'px';
   ball.style.left = ballPosX + 'px';
   ball.style.top = ballPosY + 'px';
+  dot.style.left = dotPosX + 'px';
 
 
 
@@ -29,23 +32,25 @@ function update() {
   ballPosX += ballSpeedX;
   ballPosY += ballSpeedY;
 
+
 //run score1
   if (ballPosY >= 480 &&( ballPosX>(paddle2PosX+60))){
     ballPosX = paddle1PosX;
     ballPosY = 0;
-    ballSpeedX = paddle1SpeedX= 3;
+    ballSpeedX = paddle1SpeedX= paddle2SpeedX=  3;
     ballSpeedY = 3;
     score1+=1;
   }
   else if(ballPosY >= 480 &&( ballPosX<(paddle2PosX-60))){
     ballPosX = paddle1PosX;
     ballPosY = 0;
-    ballSpeedX = paddle1SpeedX= 3;
+    ballSpeedX = paddle1SpeedX= paddle2SpeedX= 3;
     ballSpeedY = 3;
     score1+=1;
   }
   if(score1 == 6){
     score1=0;
+    alert("Game over!");
   }
   document.getElementById("score1").innerHTML=score1;
 //paddle1 run
@@ -66,6 +71,7 @@ function update() {
   if (ballPosX >= 280 || ballPosX <= 0) {
     ballSpeedX *= -1.007;
     paddle1SpeedX *= 1.007;
+    paddle2SpeedX *= 1.007;
   }
 
   if (ballPosY >= 480 || ballPosY <= 0) {
@@ -82,22 +88,51 @@ function update() {
   requestAnimationFrame(update);
 }
 
-//paddle2 run
+
 function movePaddle(e) {
   const containerWidth = gameContainer.clientWidth;
-  paddle2PosX = e.clientX - containerWidth*2;
 
-  if (paddle2PosX < 0) {
-    paddle2PosX = 0;
+//paddle2 run
+//controler
+
+dot.addEventListener("mousedown", function(event) {
+  isDragging = true;
+  dotPosX= event.clientX - containerWidth*2 - 50;
+  paddle2PosX = dotPosX;
+});
+
+document.addEventListener("mousemove", function(event) {
+  if (isDragging) {
+    if (dotPosX < event.clientX - containerWidth*2 -50){
+      dotPosX += paddle2SpeedX;
+      paddle2PosX = dotPosX;
+     }
+    if (dotPosX > event.clientX - containerWidth*2){
+      dotPosX -= paddle2SpeedX;
+      paddle2PosX = dotPosX;
+     }
+
+     if(dotPosX < 0){
+      dotPosX = 0;
+    }
+    if(dotPosX >= 250){
+      dotPosX =250;
+    }
+    if (paddle2PosX < 0) {
+      paddle2PosX = 0;
+    }
+    
+    if (paddle2PosX > 300-50) {
+      paddle2PosX = 300 - 50;
+    }
   }
+});
 
-  if (paddle2PosX > containerWidth-50) {
-    paddle2PosX = containerWidth - 50;
-  }
-
+document.addEventListener("mouseup", function() {
+  isDragging = false;
+});
 
 }
 
-document.addEventListener('mousemove', movePaddle);
+document.addEventListener('mousedown', movePaddle);
 requestAnimationFrame(update);
-
